@@ -1,0 +1,25 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use File::Path 'rmtree';
+
+my $version = shift;
+if (!$version || $version =~ /^(-h|--help)$/) {
+    die "Usage: plenv reset [version]\n";
+}
+
+my $root = $ENV{PLENV_ROOT} ? "$ENV{PLENV_ROOT}/versions" : "$ENV{HOME}/.plenv/versions";
+chdir $root or die;
+
+die "$version is not installed.\n" unless -d $version;
+my $tarball = "$version.tar.gz";
+die "Missing $version.tar.gz.\n" unless -f $tarball;
+
+rmtree $version or die;
+system "tar", "xzf", $tarball;
+
+if ($? == 0 and -d $version) {
+    warn "Reset $version\n";
+} else {
+    die "Something wrong!";
+}
