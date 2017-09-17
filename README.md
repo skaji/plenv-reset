@@ -2,11 +2,11 @@
 
 ## What is this?
 
-If you maintain CPAN modules, then you may want to fresh Perl installations.
+If you maintain CPAN modules, then you may want fresh Perl installations.
 
-I think it is a good idea to keep tarballs for each fresh Perl installations.
+I think it is a good idea to keep tarballs for each Perl installations.
 
-And when you want a fresh Perl installation, just extract tarballs.
+And when you want a fresh Perl installation, just extract the tarballs.
 
 ## Synopsis
 
@@ -16,8 +16,8 @@ And when you want a fresh Perl installation, just extract tarballs.
     cd $(plenv root)/versions
     tar czf 5.8.1.tar.gz 5.8.1
     ```
-2. Hack with perl 5.8.1....
-3. When you want a fresh perl 5.8.1:
+2. Hack with Perl 5.8.1....
+3. When you want a fresh Perl 5.8.1:
     ```
     plenv reset 5.8.1
     ```
