@@ -11,6 +11,7 @@ if (!$arg || $arg =~ /^(-h|--help)$/) {
 my $root = $ENV{PLENV_ROOT} ? "$ENV{PLENV_ROOT}/versions" : "$ENV{HOME}/.plenv/versions";
 chdir $root or die;
 
+# Provide plenv completions
 if ($arg eq "--complete") {
     my %found;
     for my $entry (glob "*") {
