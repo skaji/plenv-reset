@@ -3,14 +3,29 @@ use strict;
 use warnings;
 use File::Path 'rmtree';
 
-my $version = shift;
-if (!$version || $version =~ /^(-h|--help)$/) {
+my $arg = shift;
+if (!$arg || $arg =~ /^(-h|--help)$/) {
     die "Usage: plenv reset [version]\n";
 }
 
 my $root = $ENV{PLENV_ROOT} ? "$ENV{PLENV_ROOT}/versions" : "$ENV{HOME}/.plenv/versions";
 chdir $root or die;
 
+if ($arg eq "--complete") {
+    my %found;
+    for my $entry (glob "*") {
+        if ($entry =~ /(.*)\.tar\.gz$/) {
+            $found{$1}{tar_gz} = 1;
+        } elsif (-d $entry) {
+            $found{$entry}{version} = 1;
+        }
+    }
+    my @version = grep { keys %{$found{$_}} > 1 } keys %found;
+    print "$_\n" for sort @version;
+    exit;
+}
+
+my $version = $arg;
 die "$version is not installed.\n" unless -d $version;
 my $tarball = "$version.tar.gz";
 die "Missing $version.tar.gz.\n" unless -f $tarball;
