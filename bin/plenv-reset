@@ -8,15 +8,15 @@ if (!$arg || $arg =~ /^(-h|--help)$/) {
     die "Usage: plenv reset [version]\n";
 }
 
-my $root = $ENV{PLENV_ROOT} ? "$ENV{PLENV_ROOT}/versions" : "$ENV{HOME}/.plenv/versions";
-chdir $root or die;
+my $root = $ENV{PLENV_ROOT} || "$ENV{HOME}/.plenv";
+chdir "$root/versions" or die;
 
 # Provide plenv completions
 if ($arg eq "--complete") {
     my %found;
     for my $entry (glob "*") {
-        if ($entry =~ /(.*)\.tar\.gz$/) {
-            $found{$1}{tar_gz} = 1;
+        if ($entry =~ /(.*)\.tar\.(?:gz|xz)$/) {
+            $found{$1}{tarball} = 1;
         } elsif (-d $entry) {
             $found{$entry}{version} = 1;
         }
@@ -27,12 +27,23 @@ if ($arg eq "--complete") {
 }
 
 my $version = $arg;
+if ($version eq "-") {
+    open my $fh, "<", "$root/version" or die "$!: $root/version\n";
+    $version = <$fh>;
+    chomp $version;
+}
 die "$version is not installed.\n" unless -d $version;
-my $tarball = "$version.tar.gz";
-die "Missing $version.tar.gz.\n" unless -f $tarball;
+my $tarball;
+for my $suffix (qw(xz gz)) {
+    my $try = "$version.tar.$suffix";
+    if (-f $try) {
+        $tarball = $try, last;
+    }
+}
+die "Missing $version\'s tarball\n" unless $tarball;
 
 rmtree $version or die;
-system "tar", "xzf", $tarball;
+system "tar", "xf", $tarball;
 
 if ($? == 0 and -d $version) {
     warn "Reset $version\n";
